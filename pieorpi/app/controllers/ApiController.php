@@ -10,6 +10,8 @@ class ApiController extends ControllerBase {
     	$key = $this->request->getPost('apikey');
     	$this->default_path = $this->config->firebase->DEFAULT_PATH.'/'.$key.'/';
 		
+
+
 		$this->view->disable();
         $this->response->setContentType('application/json', 'UTF-8');
 
@@ -19,9 +21,11 @@ class ApiController extends ControllerBase {
 	    		$this->response->redirect('api/warning/003');
 	    	}
 
+            /*
 	    	if($this->request->getHeader('mobilekey') != $key) {
 	    		$this->response->redirect('api/warning/004');
 	    	} 
+            */
 
             $provider = $this->firebase->get($this->default_path);
             $provider = json_decode($provider, true);
@@ -173,6 +177,7 @@ class ApiController extends ControllerBase {
     		return $this->response;
     	}
 
+        $photographer['password'] = md5($photographer['password']);
     	$this->firebase->set('/photographers/'.$photographer_unique, $photographer);
     	$this->response->setContent($this->giveWarning('002'));
 		return $this->response;
@@ -201,6 +206,18 @@ class ApiController extends ControllerBase {
     	$this->firebase->update('/photographers/'.$photographer_unique, $photographer);
     	$this->response->setContent($this->giveWarning('002'));
 		return $this->response;
+    }
+
+    /*
+    *   normally will be used a key to determine the proeprty owner provider company. 
+    * but again, this is a hackathon. fast fast fast!
+    */
+    public function pickAddressForPhotographer($photographer_unique, $address_unique, $key = '') {
+        $uni = $this->firebase->get($this->default_path.'addresses/'.$address_unique);
+        $this->firebase->set('/photographers/'.$photographer_unique.'/selectedAddresses/'.$address_unique, json_decode($uni,true));
+
+        $this->response->setContent($this->giveWarning('002'));
+        return $this->response;
     }
 
 
