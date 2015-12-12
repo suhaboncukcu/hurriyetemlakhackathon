@@ -28,6 +28,7 @@ class PhotographerController extends ControllerBase
 
                 $photoFor = $this->request->getPost('photosFor');
                 $this->firebase->push('/photographers/'.$this->session->get('photographer_unique')."/trials/".$photoFor , $file_name );
+                $this->firebase->push($this->config->firebase->DEFAULT_PATH.'/hurriyetemlakhackathon/trials/'.$this->session->get('photographer_unique')."/".$photoFor , $file_name );
 
         }
 

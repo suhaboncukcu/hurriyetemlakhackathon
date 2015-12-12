@@ -8,14 +8,14 @@ class ApiController extends ControllerBase {
 
 	public function onConstruct() {
     	$key = $this->request->getPost('apikey');
+        
     	$this->default_path = $this->config->firebase->DEFAULT_PATH.'/'.$key.'/';
 		
-
-
 		$this->view->disable();
         $this->response->setContentType('application/json', 'UTF-8');
 
         $action = $this->dispatcher->getActionName();
+
         if($action != 'warning') {
         	if(!$key) {
 	    		$this->response->redirect('api/warning/003');
@@ -35,8 +35,8 @@ class ApiController extends ControllerBase {
         }
 
 
-        $this->lat_value = 110.574;
-		$this->lng_value = 111.320 * cos($this->$lat_value);		
+        @$this->lat_value = 110.574;
+		@$this->lng_value = 111.320 * cos($this->$lat_value);		
 	}
 
     public function indexAction() {  	
@@ -104,7 +104,10 @@ class ApiController extends ControllerBase {
 		return $this->response;
     }
 
-    public function  getAddress($unique) {
+    public function  getAddressAction($unique) {
+        //var_dump($unique);
+        //die();
+
         $all = $this->firebase->get($this->default_path.'addresses/'.$unique);
         $alls = json_decode($all, true);
         $this->response->setContent(json_encode($alls));
@@ -158,7 +161,14 @@ class ApiController extends ControllerBase {
     		}
     	}
 
-    	$this->response->setContent(json_encode($lng_res));
+        $las = array();
+        foreach ($lng_res as $tm) {
+            if($tm['needPhoto'] == "1") {
+                array_push($las, $tm);
+            }
+        }
+
+    	$this->response->setContent(json_encode($las));
 		return $this->response;
 
     }
@@ -166,10 +176,11 @@ class ApiController extends ControllerBase {
     public function newPhotographerAction() {
     	$photographer = $this->request->getPost('photographer');
     	$photographer = json_decode($photographer, true);
+        $photographer['experience'] = 0;
 
     	if(!$photographer['email'] || $photographer['email'] == '') {
     		$this->response->setContent($this->giveWarning('006'));	
-    		return $this->response;
+    		return $this->response; 
     	}
 
     	$photographer_unique =  str_ireplace('@','_',$photographer['email']);
@@ -179,13 +190,21 @@ class ApiController extends ControllerBase {
     	$k = $this->firebase->get('/photographers/'.$photographer_unique);
     	$tmo = json_decode($k, true);
     	if (sizeof($tmo) > 0) {
-    		$this->response->setContent($this->giveWarning('007'));	
-    		return $this->response;
+            if(md5($photographer['password']) != $tmo['password']) {
+               $this->response->setContent($this->giveWarning('007'));  
+                return $this->response; 
+            } else {
+                $arr = array("unique" => $photographer_unique);
+                $this->response->setContent(json_encode($arr));
+                return $this->response;
+            }
     	}
 
         $photographer['password'] = md5($photographer['password']);
     	$this->firebase->set('/photographers/'.$photographer_unique, $photographer);
-    	$this->response->setContent($this->giveWarning('002'));
+
+        $arr = array("unique" => $photographer_unique);
+    	$this->response->setContent(json_encode($arr));
 		return $this->response;
     }
 
@@ -218,10 +237,10 @@ class ApiController extends ControllerBase {
     *   normally will be used a key to determine the proeprty owner provider company. 
     * but again, this is a hackathon. fast fast fast!
     */
-    public function pickAddressForPhotographer($photographer_unique, $address_unique, $key = '') {
+    public function pickAddressForPhotographerAction($photographer_unique, $address_unique, $key = '') {
         $uni = $this->firebase->get($this->default_path.'addresses/'.$address_unique);
         $this->firebase->set('/photographers/'.$photographer_unique.'/selectedAddresses/'.$address_unique, json_decode($uni,true));
-
+        $this->firebase->set($this->default_path.'addresses/'.$address_unique.'/needPhoto', "0");
         $this->response->setContent($this->giveWarning('002'));
         return $this->response;
     }
