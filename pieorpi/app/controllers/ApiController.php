@@ -104,6 +104,13 @@ class ApiController extends ControllerBase {
 		return $this->response;
     }
 
+    public function  getAddress($unique) {
+        $all = $this->firebase->get($this->default_path.'addresses/'.$unique);
+        $alls = json_decode($all, true);
+        $this->response->setContent(json_encode($alls));
+        return $this->response;
+    }
+
     public function deleteAddressAction($id) {
     	$this->firebase->delete($this->default_path.'addresses/'.$id );
     	$this->response->setContent($this->giveWarning('002'));
@@ -151,7 +158,6 @@ class ApiController extends ControllerBase {
     		}
     	}
 
-        $lng_res['count'] = sizeof($lng_res);
     	$this->response->setContent(json_encode($lng_res));
 		return $this->response;
 
