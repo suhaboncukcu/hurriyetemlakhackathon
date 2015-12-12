@@ -22,6 +22,12 @@ class ApiController extends ControllerBase {
 	    	if($this->request->getHeader('mobilekey') != $key) {
 	    		$this->response->redirect('api/warning/004');
 	    	} 
+
+            $provider = $this->firebase->get($this->default_path);
+            $provider = json_decode($provider, true);
+            if(sizeof($provider) == 0 ) {
+                $this->response->redirect('api/warning/009');
+            }
         }
 
 

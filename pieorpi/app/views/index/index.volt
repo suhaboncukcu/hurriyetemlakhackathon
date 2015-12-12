@@ -1,7 +1,10 @@
 <div class="page-header">
-    <h1>Congratulations!</h1>
+    <h1>Welcome to Pie or Pi</h1>
 </div>
 
-<p>You're now flying with Phalcon. Great things are about to happen!</p>
+<a href="/provider"  class="btn btn-default btn-lg btn-block" >I am a provider</a>
 
-<p>This page is located at <code>views/index/index.volt</code></p>
+<a href="/photographer" class="btn btn-default btn-lg btn-block" >I am a photographer</a>
+
+
+
