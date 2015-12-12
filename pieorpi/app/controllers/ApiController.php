@@ -32,19 +32,13 @@ class ApiController extends ControllerBase {
 
 
         $this->lat_value = 110.574;
-		$this->lng_value = 111.320 * cos($this->$lat_value);
-    	
-    	
-		
+		$this->lng_value = 111.320 * cos($this->$lat_value);		
 	}
-
-
 
     public function indexAction() {  	
 		$this->response->setContent($this->giveWarning('001'));
 		return $this->response;
     } 
-
 
     public function createAction() {  	
 		$this->firebase->set($this->default_path, 'hedehede');
@@ -121,14 +115,14 @@ class ApiController extends ControllerBase {
     	$lng = $search['lng'];
     	$parameter = $search['parameter'];
 
-    	$lat_dif = $this->lat_value*$parameter;
-    	$lng_dif = $this->lng_value*$parameter;
+    	$lat_dif = $parameter / $this->lat_value;
+    	$lng_dif = $parameter / $this->lng_value;
 
     	$max_lat = $lat + $lat_dif;
-    	$min_lat = $lat - $this->lat_value*$parameter;
+    	$min_lat = $lat - $lat_dif;
 
     	$max_lng = $lng + $lng_dif;
-    	$min_lng = $lng - $this->lng_value*$parameter;
+    	$min_lng = $lng - $lng_dif;
 
 
     	$all = $this->firebase->get($this->default_path.'addresses');
@@ -153,6 +147,7 @@ class ApiController extends ControllerBase {
     		}
     	}
 
+        $lng_res['count'] = sizeof($lng_res);
     	$this->response->setContent(json_encode($lng_res));
 		return $this->response;
 
