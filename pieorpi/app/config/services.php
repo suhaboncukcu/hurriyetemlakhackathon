@@ -18,6 +18,14 @@ use Phalcon\Flash\Direct as Flash;
  */
 $di = new FactoryDefault();
 
+
+/**
+* Set the config global
+**/
+$di->set('config', function () use ($config) {
+    return $config;
+}, true);
+
 /**
  * The URL component is used to generate all kind of urls in the application
  */
@@ -95,4 +103,12 @@ $di->setShared('session', function () {
     $session->start();
 
     return $session;
+});
+
+
+/**
+* Connect to firebase
+*/
+$di->setShared('firebase', function() use ($config) {
+    return new \Firebase\FirebaseLib($config->firebase->DEFAULT_URL, $config->firebase->DEFAULT_TOKEN);
 });
