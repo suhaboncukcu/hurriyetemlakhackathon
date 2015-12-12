@@ -10,7 +10,7 @@
 	    <select name="photosFor">
 	    	{% if photographer['selectedAddresses'] is defined %}
 		    	{% for selectedAddress in photographer['selectedAddresses'] %}
-		    		<option value="{{selectedAddress.unique}}">{{selectedAddress.title}}</option>
+		    		<option value="{{selectedAddress['unique']}}">{{selectedAddress['title']}}</option>
 		    	{% endfor %}
 		    {% endif %}
 	    </select>
@@ -23,7 +23,7 @@
 	{% if photographer['trials'] is defined %}
 		{% for photos in photographer['trials'] %}
 			{% for photo in photos %}
-				<img src="{{ photo }}" class="img">
+				<img style="max-width: 300px; max-height: 200px;" src="/files/{{ photo }}" class="img">
 				<br/>
 				<hr/>
 			{% endfor %}
