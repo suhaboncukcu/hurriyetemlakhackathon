@@ -165,15 +165,41 @@ class ApiController extends ControllerBase {
     	$photographer_unique =  str_ireplace('.','_',$photographer_unique);
 
 
-    	$k = $this->firebase->get($this->default_path.'photographers/'.$photographer_unique);
+    	$k = $this->firebase->get('/photographers/'.$photographer_unique);
     	$tmo = json_decode($k, true);
     	if (sizeof($tmo) > 0) {
     		$this->response->setContent($this->giveWarning('007'));	
     		return $this->response;
     	}
 
-    	$this->firebase->set($this->default_path.'photographers/'.$photographer_unique, $photographer);
+    	$this->firebase->set('/photographers/'.$photographer_unique, $photographer);
+    	$this->response->setContent($this->giveWarning('002'));
+		return $this->response;
+    }
 
+    public function updatePhotographerAction() {
+    	$photographer = $this->request->getPost('photographer');
+    	$photographer = json_decode($photographer, true);
+
+    	if(!$photographer['email'] || $photographer['email'] == '') {
+    		$this->response->setContent($this->giveWarning('006'));	
+    		return $this->response;
+    	}
+
+    	$photographer_unique =  str_ireplace('@','_',$photographer['email']);
+    	$photographer_unique =  str_ireplace('.','_',$photographer_unique);
+
+
+    	$k = $this->firebase->get('/photographers/'.$photographer_unique);
+    	$tmo = json_decode($k, true);
+    	if (sizeof($tmo) == 0) {
+    		$this->response->setContent($this->giveWarning('008'));	
+    		return $this->response;
+    	}
+
+    	$this->firebase->update('/photographers/'.$photographer_unique, $photographer);
+    	$this->response->setContent($this->giveWarning('002'));
+		return $this->response;
     }
 
 
