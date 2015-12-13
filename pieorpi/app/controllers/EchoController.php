@@ -13,15 +13,7 @@ class EchoController extends ControllerBase
     }
 
     public function testAction() {
-    	$res = $this->firebase->get( $this->config->firebase->DEFAULT_PATH.'/hurriyetemlakhackathon/addresses');
-    	$res = json_decode($res, true);
-    	foreach ($res as $re) {
-    		$price = $re['price'] / 50;
-    		if($price < 5) {
-    			$price = 5;
-    		}
-    		$this->firebase->set( $this->config->firebase->DEFAULT_PATH.'/hurriyetemlakhackathon/addresses/'.$re['unique'].'/price', $price);
-    	}
+    	
     }	
 
 }
